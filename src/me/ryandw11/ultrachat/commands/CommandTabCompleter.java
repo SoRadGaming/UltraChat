@@ -8,19 +8,20 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 public class CommandTabCompleter implements TabCompleter{
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
+	public List<String> onTabComplete(@NotNull CommandSender sender, Command cmd, @NotNull String s, @NotNull String[] args) {
 		if(cmd.getName().equalsIgnoreCase("chat")){
 			ArrayList<String> completions = new ArrayList<>();
 			if(args.length == 1){
 				completions = new ArrayList<>( Arrays.asList("help", "stop", "broadcast", "clear", "sjoin", "leave", "join", "color", "raw", "reload", "hooks"));
-				completions = getAppliableTabCompleters(args.length == 1 ? args[0] : "", completions);
+				completions = getAppliableTabCompleters(args[0], completions);
 			}else{
 				if(args[0].equalsIgnoreCase("help")){
-					completions = new ArrayList<>(Arrays.asList("2"));
+					completions = new ArrayList<>(Collections.singletonList("2"));
 	                completions = getAppliableTabCompleters(args.length == 2 ? args[1] : "", completions);
 				}
 				else{
@@ -30,7 +31,6 @@ public class CommandTabCompleter implements TabCompleter{
 			Collections.sort(completions);
 			return completions;
 		}
-		
 		return null;
 	}
 	

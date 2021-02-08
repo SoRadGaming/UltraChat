@@ -40,7 +40,7 @@ public class ChannelJSON implements Listener {
 		String channel = plugin.data.getString(p.getUniqueId() + ".channel");
 
 		ChannelProperties cp = new ChannelProperties(true, channel);
-		if(!plugin.channel.getBoolean(channel + ".always_appear")){
+		if(!plugin.channel.getBoolean(channel + ".always_appear") && (!Objects.requireNonNull(channel).equals("castle-defenders") && !Objects.requireNonNull(channel).equals("paintball"))){
 			UltraChatEvent uce = new UltraChatEvent(p, e.getMessage(), new HashSet<>(e.getRecipients()), ChatType.CHANNEL, cp);
 
 				Bukkit.getServer().getPluginManager().callEvent(uce);
@@ -48,7 +48,7 @@ public class ChannelJSON implements Listener {
 				e.getRecipients().clear();
 				if (uce.isCancelled()) return;
 				for (Player pl : uce.getRecipients()) {
-					if (plugin.data.getString(pl.getUniqueId() + ".channel").equals(channel)) {
+					if (Objects.equals(plugin.data.getString(pl.getUniqueId() + ".channel"), channel)) {
 						if (pl.hasPermission(Objects.requireNonNull(plugin.channel.getString(channel + ".permission"))) || Objects.requireNonNull(plugin.channel.getString(channel + ".permission")).equalsIgnoreCase("none")) {
 							String format = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(plugin.channel.getString(channel + ".prefix")))
 									+ plugin.papi.translatePlaceholders(ChatUtil.translateColorCodes(Objects.requireNonNull(plugin.channel.getString(channel + ".format"))), p)
@@ -63,25 +63,6 @@ public class ChannelJSON implements Listener {
 							pl.spigot().sendMessage(cb.create());
 						}
 					}
-				}
-		}
-		else{
-			UltraChatEvent uce = new UltraChatEvent(p, e.getMessage(), new HashSet<>(e.getRecipients()), ChatType.CHANNEL, cp);
-			Bukkit.getServer().getPluginManager().callEvent(uce);
-			e.getRecipients().clear();
-			if(!uce.isCancelled())
-				for(Player pl : uce.getRecipients()){
-					String formats = ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(plugin.channel.getString(channel + ".prefix")))
-							+ plugin.papi.translatePlaceholders(ChatUtil.translateColorCodes(Objects.requireNonNull(plugin.channel.getString(channel + ".format"))), p)
-							.replace("%prefix%", pf.getPrefix())
-							.replace("%suffix%", pf.getSuffix())
-							.replace("%player%", p.getDisplayName())
-							+ pf.getColor();
-
-					ComponentBuilder cb = new ComponentBuilder("");
-					cb.append(JComponentManager.formatComponents(formats, p));
-					cb.append(new TextComponent(TextComponent.fromLegacyText(pf.getColor() + plugin.chatColorUtil.translateChatColor(e.getMessage()), pf.getColor())), ComponentBuilder.FormatRetention.NONE);
-					pl.spigot().sendMessage(cb.create());
 				}
 		}
 	}
